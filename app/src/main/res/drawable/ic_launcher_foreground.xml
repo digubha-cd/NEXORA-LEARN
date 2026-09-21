@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Soft glow behind the N -->
+    <path
+        android:pathData="M52,50m-26,0a26,26 0 1,0 52,0a26,26 0 1,0 -52,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="52"
+                android:centerY="50"
+                android:gradientRadius="26"
+                android:type="radial">
+                <item android:offset="0.0" android:color="#4400E5FF" />
+                <item android:offset="0.6" android:color="#22A855F7" />
+                <item android:offset="1.0" android:color="#00000000" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Speech bubble on left (with 3 dots) -->
+    <path
+        android:pathData="M23,43h10a3,3 0 0,1 3,3v6a3,3 0 0,1 -3,3h-5l-4,3v-3a3,3 0 0,1 -1,-2v-7a3,3 0 0,1 3,-3z"
+        android:fillColor="#00E5FF" />
+    <path
+        android:pathData="M26,49m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M29.5,49m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M33,49m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0"
+        android:fillColor="#FFFFFF" />
+
+    <!-- Orbital ring (back arc) -->
+    <path
+        android:pathData="M64,36 C69,32 74,34 76,40 C78,46 72,55 60,62"
+        android:strokeWidth="2.2"
+        android:strokeColor="#C026D3"
+        android:strokeLineCap="round" />
+
+    <!-- 3D Letter 'N' - Left vertical stem (Cyan to Blue) -->
+    <path
+        android:pathData="M39,32 h9 v36 h-9 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="43.5"
+                android:startY="32"
+                android:endX="43.5"
+                android:endY="68"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#00F0FF" />
+                <item android:offset="1.0" android:color="#0070F3" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 3D Letter 'N' - Diagonal stroke (Blue to Magenta) -->
+    <path
+        android:pathData="M39,32 L66,68 h-9 L39,44 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="39"
+                android:startY="32"
+                android:endX="66"
+                android:endY="68"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#0070F3" />
+                <item android:offset="0.6" android:color="#9333EA" />
+                <item android:offset="1.0" android:color="#D946EF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 3D Letter 'N' - Right vertical stem (Magenta to Violet) -->
+    <path
+        android:pathData="M57,32 h9 v36 h-9 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="61.5"
+                android:startY="32"
+                android:endX="61.5"
+                android:endY="68"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#EC4899" />
+                <item android:offset="1.0" android:color="#C026D3" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Orbital ring (front swoop, looping across N from speech bubble) -->
+    <path
+        android:pathData="M27,55 C29,66 42,70 56,66 C65,63 71,57 74,51"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="27"
+                android:startY="60"
+                android:endX="74"
+                android:endY="51"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#00E5FF" />
+                <item android:offset="0.7" android:color="#A855F7" />
+                <item android:offset="1.0" android:color="#EC4899" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 4-point Sparkle Star on upper orbit ring -->
+    <path
+        android:pathData="M73,31 Q73,34 76,34 Q73,34 73,37 Q73,34 70,34 Q73,34 73,31 Z"
+        android:fillColor="#FFFFFF" />
+
+    <!-- Profile head outline on right -->
+    <path
+        android:pathData="M73,43 C76,43 78,45 78,48 C78,49.5 77.2,51 77.5,52.5 C77.8,54 79,55 79,56.5 C79,58 77.5,59.5 76.5,61 C75.5,62.5 73,63 72,63"
+        android:strokeWidth="1.4"
+        android:strokeColor="#A855F7"
+        android:strokeLineCap="round" />
+
+    <!-- AI Neural nodes inside head -->
+    <path
+        android:pathData="M74,48 L76,51 L74,54 L72,51 Z M74,48 L72,51 M76,51 L75,56"
+        android:strokeWidth="0.8"
+        android:strokeColor="#00E5FF" />
+    <path
+        android:pathData="M74,48m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M76,51m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M74,54m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M72,51m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0 M75,56m-1,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0"
+        android:fillColor="#00E5FF" />
+
+    <!-- Sound waves in front of mouth -->
+    <path
+        android:pathData="M81,54 C82.5,55 82.5,57 81,58 M83.5,52.5 C85.5,54.5 85.5,57.5 83.5,59.5"
+        android:strokeWidth="1.2"
+        android:strokeColor="#EC4899"
+        android:strokeLineCap="round" />
+
+    <!-- Minimal wordmark for small icon safe bounds -->
+    <path
+        android:pathData="M34,76 h38"
+        android:strokeWidth="1.2"
+        android:strokeColor="#33FFFFFF" />
+</vector>

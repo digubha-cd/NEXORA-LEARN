@@ -1,0 +1,6 @@
+{
+  "name": "NEXORA LEARN",
+  "description": "Smart Study Reminder and Planner app for Gujarat Board Class 12 Commerce students targeting 90+ marks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

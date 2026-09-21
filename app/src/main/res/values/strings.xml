@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">NEXORA LEARN</string>
+    <string name="app_subtitle">Smart Study. Better Preparation.</string>
+    <string name="target_badge">90+ Marks Target</string>
+    <string name="medium_badge">Gujarati Medium</string>
+    <string name="class_badge">Class 12 Commerce</string>
+    <string name="loading_text">LOADING</string>
+    <string name="empty_tasks_title">No study tasks yet</string>
+    <string name="empty_tasks_subtitle">Your study plan will appear here.</string>
+    <string name="school_exam_title">School Exam</string>
+    <string name="board_exam_title">Board Exam</string>
+</resources>
