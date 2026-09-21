@@ -79,6 +79,24 @@ fun MainAppScreen(
     val currentStudentCompletedChapters by SyllabusRepository.completedChapterIds.collectAsStateWithLifecycle()
 
     val isFullScreenActive = selectedSubject != null || fullScreenRoute !is FullScreenRoute.None
+    val context = androidx.compose.ui.platform.LocalContext.current.applicationContext
+
+    // Initialize FriendsRepository with current student
+    androidx.compose.runtime.LaunchedEffect(studentProfile.userId) {
+        FriendsRepository.initialize(studentProfile)
+    }
+
+    // Sync current student's study progress to Firestore
+    androidx.compose.runtime.LaunchedEffect(allCompletedTasksCount, streak.currentStreak, currentStudentCompletedChapters) {
+        if (studentProfile.userId.isNotBlank()) {
+            com.example.core.repository.FirestoreStudentProfileRepository(context).syncStudentProgress(
+                userId = studentProfile.userId,
+                completedTodos = allCompletedTasksCount,
+                streakDays = streak.currentStreak,
+                completedChapters = currentStudentCompletedChapters.toList()
+            )
+        }
+    }
 
     Scaffold(
         modifier = modifier

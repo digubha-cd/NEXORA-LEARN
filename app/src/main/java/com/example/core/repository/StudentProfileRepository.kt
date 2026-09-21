@@ -29,6 +29,13 @@ suspend fun <T> Task<T>.awaitTask(): T =
 interface StudentProfileRepository {
     suspend fun saveProfile(profile: StudentProfile): Result<Unit>
     suspend fun getProfile(userId: String): Result<StudentProfile?>
+    suspend fun searchStudents(query: String): Result<List<StudentProfile>>
+    suspend fun syncStudentProgress(
+        userId: String,
+        completedTodos: Int,
+        streakDays: Int,
+        completedChapters: List<String>
+    ): Result<Unit>
 }
 
 class FirestoreStudentProfileRepository(
@@ -80,6 +87,88 @@ class FirestoreStudentProfileRepository(
             Result.success(null)
         } catch (e: Exception) {
             Log.e("FirestoreRepo", "Error getting profile from Firestore: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun searchStudents(query: String): Result<List<StudentProfile>> = withContext(Dispatchers.IO) {
+        val trimmed = query.trim()
+        if (trimmed.isEmpty()) return@withContext Result.success(emptyList())
+
+        try {
+            if (isFirebaseAvailable) {
+                val db = FirebaseFirestore.getInstance()
+                // Search by direct userId match first
+                val directDoc = db.collection("students").document(trimmed).get().awaitTask()
+                if (directDoc.exists()) {
+                    directDoc.data?.let { data ->
+                        return@withContext Result.success(listOf(StudentProfile.fromFirestoreMap(data)))
+                    }
+                }
+
+                // Search by studentName match
+                val nameQuery = db.collection("students")
+                    .whereEqualTo("studentName", trimmed)
+                    .limit(10)
+                    .get()
+                    .awaitTask()
+
+                val results = nameQuery.documents.mapNotNull { doc ->
+                    doc.data?.let { StudentProfile.fromFirestoreMap(it) }
+                }
+
+                if (results.isNotEmpty()) {
+                    return@withContext Result.success(results)
+                }
+
+                // Prefix search
+                val prefixQuery = db.collection("students")
+                    .whereGreaterThanOrEqualTo("studentName", trimmed)
+                    .whereLessThanOrEqualTo("studentName", "$trimmed\uf8ff")
+                    .limit(10)
+                    .get()
+                    .awaitTask()
+
+                val prefixResults = prefixQuery.documents.mapNotNull { doc ->
+                    doc.data?.let { StudentProfile.fromFirestoreMap(it) }
+                }
+
+                return@withContext Result.success(prefixResults)
+            }
+            Result.success(emptyList())
+        } catch (e: Exception) {
+            Log.e("FirestoreRepo", "Error searching students in Firestore: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun syncStudentProgress(
+        userId: String,
+        completedTodos: Int,
+        streakDays: Int,
+        completedChapters: List<String>
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        if (userId.isBlank()) return@withContext Result.success(Unit)
+        try {
+            if (isFirebaseAvailable) {
+                val db = FirebaseFirestore.getInstance()
+                val points = (completedTodos * 10) + (streakDays * 15)
+                val updates = mapOf<String, Any>(
+                    "completedTodoCount" to completedTodos,
+                    "studyStreakDays" to streakDays,
+                    "competitionPoints" to points,
+                    "completedChapterIds" to completedChapters,
+                    "updatedAt" to System.currentTimeMillis()
+                )
+                db.collection("students")
+                    .document(userId)
+                    .update(updates)
+                    .awaitTask()
+                Log.d("FirestoreRepo", "Student progress synced to Firestore: todos=$completedTodos, streak=$streakDays, points=$points")
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.w("FirestoreRepo", "Error updating student progress in Firestore: ${e.message}")
             Result.failure(e)
         }
     }
