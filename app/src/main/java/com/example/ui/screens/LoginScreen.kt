@@ -26,14 +26,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Stars
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Tab
@@ -245,31 +249,76 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                // Error Banner
+                // Error Banner with Actionable Guidance
                 AnimatedVisibility(visible = errorMessage != null) {
                     errorMessage?.let { error ->
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(NexoraError.copy(alpha = 0.15f), RoundedCornerShape(10.dp))
-                                .border(1.dp, NexoraError.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                                .background(NexoraError.copy(alpha = 0.12f), RoundedCornerShape(10.dp))
+                                .border(1.dp, NexoraError.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
                                 .padding(12.dp)
-                                .testTag("error_banner"),
-                            verticalAlignment = Alignment.CenterVertically
+                                .testTag("error_banner")
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.ErrorOutline,
-                                contentDescription = null,
-                                tint = NexoraError,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = error,
-                                color = NexoraTextPrimary,
-                                fontSize = 12.sp,
-                                modifier = Modifier.weight(1f)
-                            )
+                            Row(verticalAlignment = Alignment.Top) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ErrorOutline,
+                                    contentDescription = null,
+                                    tint = NexoraError,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = error,
+                                    color = NexoraTextPrimary,
+                                    fontSize = 12.sp,
+                                    lineHeight = 16.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = { authRepository.clearError() },
+                                    modifier = Modifier.size(20.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Close,
+                                        contentDescription = "Dismiss error",
+                                        tint = NexoraTextSecondary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+
+                            if (selectedTab == 1 && (error.contains("Google Sign-In", ignoreCase = true) || error.contains("SMS", ignoreCase = true))) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                OutlinedButton(
+                                    onClick = {
+                                        selectedTab = 0
+                                        authRepository.clearError()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(36.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, NexoraCyan.copy(alpha = 0.5f)),
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = NexoraCyan.copy(alpha = 0.08f),
+                                        contentColor = NexoraCyan
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.AccountCircle,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = NexoraCyan
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "Switch to Google Sign-In",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
                         }
                         Spacer(modifier = Modifier.height(14.dp))
                     }

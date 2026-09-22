@@ -286,20 +286,31 @@ class AuthRepositoryImpl(
 
                 override fun onVerificationFailed(e: FirebaseException) {
                     Log.e("AuthRepo", "Firebase Phone Verification Failed: ${e.message}", e)
+                    val errorText = e.message.orEmpty()
                     val friendlyMessage = when {
-                        e.message?.contains("API key not valid", ignoreCase = true) == true ||
-                        e.message?.contains("invalid API key", ignoreCase = true) == true ->
+                        errorText.contains("17006", ignoreCase = true) ||
+                        errorText.contains("region enabled", ignoreCase = true) ||
+                        errorText.contains("SMS unable to be sent", ignoreCase = true) ->
+                            "SMS sending is restricted for this region in Firebase. Please enable India (+91) in Firebase Console > Authentication > Settings > SMS Region Policy, or use Google Sign-In."
+                        errorText.contains("operation is not allowed", ignoreCase = true) ||
+                        errorText.contains("provider is disabled", ignoreCase = true) ||
+                        errorText.contains("operation-not-allowed", ignoreCase = true) ->
+                            "Phone Sign-In is disabled in Firebase. Please enable 'Phone' in Firebase Console > Authentication > Sign-in method, or use Google Sign-In."
+                        errorText.contains("INVALID_CERT_HASH", ignoreCase = true) ||
+                        errorText.contains("certificate hash", ignoreCase = true) ||
+                        errorText.contains("app-not-authorized", ignoreCase = true) ->
+                            "App verification failed (Certificate Hash). Please ensure both Debug and Release SHA-1/SHA-256 fingerprints are added in Firebase Console project settings, or use Google Sign-In."
+                        errorText.contains("API key not valid", ignoreCase = true) ||
+                        errorText.contains("invalid API key", ignoreCase = true) ->
                             "Firebase API Key is invalid in google-services.json. Please download and replace google-services.json from Firebase Console with your project's active API key."
-                        e.message?.contains("quota", ignoreCase = true) == true ->
-                            "SMS quota exceeded for Firebase project. Please check SMS limits in Firebase Console or use Google Sign-In."
-                        e.message?.contains("app-not-authorized", ignoreCase = true) == true ||
-                        e.message?.contains("play integrity", ignoreCase = true) == true ||
-                        e.message?.contains("recaptcha", ignoreCase = true) == true ||
-                        e.message?.contains("sha", ignoreCase = true) == true ->
-                            "App verification failed. Ensure SHA-1 fingerprint (A1:23:F0:E0:EF:99:2F:12:A3:07:AD:59:29:53:4F:76:A2:EF:BD:0A) is added in Firebase Console project settings."
-                        e.message?.contains("invalid-phone-number", ignoreCase = true) == true ->
+                        errorText.contains("quota", ignoreCase = true) ->
+                            "SMS quota exceeded for this Firebase project. Please check SMS limits in Firebase Console or use Google Sign-In."
+                        errorText.contains("play integrity", ignoreCase = true) ||
+                        errorText.contains("recaptcha", ignoreCase = true) ->
+                            "Device verification failed. Please ensure Play Integrity or reCAPTCHA is enabled in Firebase Console, or use Google Sign-In."
+                        errorText.contains("invalid-phone-number", ignoreCase = true) ->
                             "The mobile number format is invalid. Please enter a valid 10-digit number."
-                        e.message?.contains("network", ignoreCase = true) == true ->
+                        errorText.contains("network", ignoreCase = true) ->
                             "Network connection failed. Please check your internet connection and retry."
                         else ->
                             "Firebase Phone Verification error: ${e.localizedMessage ?: e.message}"
