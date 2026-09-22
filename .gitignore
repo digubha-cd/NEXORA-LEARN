@@ -12,6 +12,7 @@
 /build
 /captures
 .externalNativeBuild
+.build-outputs
 .cxx
 local.properties
 .env
