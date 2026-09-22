@@ -288,7 +288,37 @@ fun LoginScreen(
                                 }
                             }
 
-                            if (selectedTab == 1 && (error.contains("Google Sign-In", ignoreCase = true) || error.contains("SMS", ignoreCase = true))) {
+                            if (selectedTab == 0 && (error.contains("Mobile Number", ignoreCase = true) || error.contains("No Google Account", ignoreCase = true) || error.contains("cancelled", ignoreCase = true) || error.contains("unavailable", ignoreCase = true))) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                OutlinedButton(
+                                    onClick = {
+                                        selectedTab = 1
+                                        authRepository.clearError()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(36.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, NexoraCyan.copy(alpha = 0.5f)),
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = NexoraCyan.copy(alpha = 0.08f),
+                                        contentColor = NexoraCyan
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Phone,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = NexoraCyan
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "Continue with Mobile Number + OTP",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            } else if (selectedTab == 1 && (error.contains("Google Sign-In", ignoreCase = true) || error.contains("SMS", ignoreCase = true) || error.contains("Firebase", ignoreCase = true))) {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 OutlinedButton(
                                     onClick = {
