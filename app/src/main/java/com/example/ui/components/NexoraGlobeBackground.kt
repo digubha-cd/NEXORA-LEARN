@@ -41,8 +41,8 @@ fun NexoraGlobeBackground(
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
-                    NexoraCyan.copy(alpha = 0.45f),
-                    NexoraElectricBlue.copy(alpha = 0.25f),
+                    NexoraCyan.copy(alpha = 0.18f),
+                    NexoraElectricBlue.copy(alpha = 0.08f),
                     Color.Transparent
                 ),
                 center = Offset(centerX, h * 0.4f),
@@ -57,8 +57,8 @@ fun NexoraGlobeBackground(
         }
         drawPath(
             path = arcPath,
-            color = NexoraCyan.copy(alpha = 0.8f),
-            style = Stroke(width = 2.5f)
+            color = NexoraCyan.copy(alpha = 0.35f),
+            style = Stroke(width = 2f)
         )
 
         val secondArc = Path().apply {
@@ -67,8 +67,8 @@ fun NexoraGlobeBackground(
         }
         drawPath(
             path = secondArc,
-            color = NexoraCyan.copy(alpha = 0.4f),
-            style = Stroke(width = 1.5f)
+            color = NexoraCyan.copy(alpha = 0.2f),
+            style = Stroke(width = 1.2f)
         )
 
         // Dotted grid texture representing global connectivity & intelligence
@@ -79,12 +79,12 @@ fun NexoraGlobeBackground(
             if (curveFactor > 0f) {
                 val py = h * 0.45f + (1f - curveFactor) * (h * 0.35f)
                 drawCircle(
-                    color = NexoraCyan.copy(alpha = 0.35f * curveFactor),
+                    color = NexoraCyan.copy(alpha = 0.22f * curveFactor),
                     radius = 1.8f,
                     center = Offset(px, py)
                 )
                 drawCircle(
-                    color = NexoraCyan.copy(alpha = 0.25f * curveFactor),
+                    color = NexoraCyan.copy(alpha = 0.14f * curveFactor),
                     radius = 1.4f,
                     center = Offset(px, py + 24f)
                 )

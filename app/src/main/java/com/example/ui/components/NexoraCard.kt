@@ -15,18 +15,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.ui.theme.NexoraBorder
-import com.example.ui.theme.NexoraSurfaceVariant
+import com.example.ui.theme.NexoraSurface
 
 /**
- * Reusable Card component adhering to the premium dark aesthetic
- * with rounded corners and subtle glassmorphic borders.
+ * Reusable Card component adhering to the premium light aesthetic
+ * with rounded corners, subtle border, and soft shadow.
  */
 @Composable
 fun NexoraCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     borderColor: Color = NexoraBorder,
-    containerColor: Color = NexoraSurfaceVariant,
+    containerColor: Color = NexoraSurface,
     cornerRadius: Dp = 16.dp,
     contentPadding: Dp = 16.dp,
     testTag: String = "nexora_card",
@@ -38,6 +38,7 @@ fun NexoraCard(
             shape = RoundedCornerShape(cornerRadius),
             border = BorderStroke(1.dp, borderColor),
             colors = CardDefaults.cardColors(containerColor = containerColor),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             modifier = modifier
                 .fillMaxWidth()
                 .testTag(testTag)
@@ -52,6 +53,7 @@ fun NexoraCard(
             shape = RoundedCornerShape(cornerRadius),
             border = BorderStroke(1.dp, borderColor),
             colors = CardDefaults.cardColors(containerColor = containerColor),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             modifier = modifier
                 .fillMaxWidth()
                 .testTag(testTag)

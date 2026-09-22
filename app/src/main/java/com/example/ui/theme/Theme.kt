@@ -2,24 +2,25 @@ package com.example.ui.theme
 
 import android.app.Activity
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val NexoraDarkColorScheme = darkColorScheme(
+private val NexoraLightColorScheme = lightColorScheme(
     primary = NexoraCyan,
-    onPrimary = NexoraBackground,
+    onPrimary = Color.White,
     primaryContainer = NexoraSurfaceVariant,
     onPrimaryContainer = NexoraCyan,
     secondary = NexoraMagenta,
-    onSecondary = NexoraBackground,
-    secondaryContainer = NexoraSurfaceElevated,
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFFDF2F8),
     onSecondaryContainer = NexoraPink,
     tertiary = NexoraPurple,
-    onTertiary = NexoraBackground,
+    onTertiary = Color.White,
     background = NexoraBackground,
     onBackground = NexoraTextPrimary,
     surface = NexoraSurface,
@@ -28,7 +29,7 @@ private val NexoraDarkColorScheme = darkColorScheme(
     onSurfaceVariant = NexoraTextSecondary,
     outline = NexoraBorder,
     error = NexoraError,
-    onError = NexoraTextPrimary
+    onError = Color.White
 )
 
 @Composable
@@ -43,14 +44,14 @@ fun NexoraTheme(
                 window.statusBarColor = NexoraBackground.toArgb()
                 window.navigationBarColor = NexoraBackground.toArgb()
                 val controller = WindowCompat.getInsetsController(window, view)
-                controller.isAppearanceLightStatusBars = false
-                controller.isAppearanceLightNavigationBars = false
+                controller.isAppearanceLightStatusBars = true
+                controller.isAppearanceLightNavigationBars = true
             }
         }
     }
 
     MaterialTheme(
-        colorScheme = NexoraDarkColorScheme,
+        colorScheme = NexoraLightColorScheme,
         typography = Typography,
         content = content
     )
@@ -59,7 +60,7 @@ fun NexoraTheme(
 // Retain alias for any existing test references
 @Composable
 fun MyApplicationTheme(
-    darkTheme: Boolean = true,
+    darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {

@@ -20,10 +20,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.NexoraBackground
 import com.example.ui.theme.NexoraBorder
 import com.example.ui.theme.NexoraButtonGradient
-import com.example.ui.theme.NexoraCyan
+import com.example.ui.theme.NexoraSurface
+import com.example.ui.theme.NexoraTextMuted
 import com.example.ui.theme.NexoraTextPrimary
 
 /**
@@ -44,7 +44,7 @@ fun NexoraPrimaryButton(
         shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            disabledContainerColor = Color(0x3300E5FF)
+            disabledContainerColor = NexoraBorder
         ),
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
@@ -57,22 +57,22 @@ fun NexoraPrimaryButton(
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
                 .background(
-                    brush = if (enabled && !isLoading) NexoraButtonGradient else NexoraButtonGradient,
+                    brush = NexoraButtonGradient,
                     shape = RoundedCornerShape(14.dp),
-                    alpha = if (enabled && !isLoading) 1f else 0.5f
+                    alpha = if (enabled && !isLoading) 1f else 0.45f
                 ),
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
-                    color = NexoraBackground,
+                    color = Color.White,
                     strokeWidth = 2.5.dp,
                     modifier = Modifier.testTag("button_loading_indicator")
                 )
             } else {
                 Text(
                     text = text,
-                    color = NexoraBackground,
+                    color = Color.White,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.5.sp
@@ -83,7 +83,7 @@ fun NexoraPrimaryButton(
 }
 
 /**
- * Reusable secondary outlined button with subtle glassmorphism border.
+ * Reusable secondary outlined button with clean light styling.
  */
 @Composable
 fun NexoraSecondaryButton(
@@ -97,9 +97,12 @@ fun NexoraSecondaryButton(
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(14.dp),
-        border = BorderStroke(1.2.dp, NexoraBorder),
+        border = BorderStroke(1.2.dp, if (enabled) NexoraBorder else NexoraBorder.copy(alpha = 0.5f)),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = NexoraTextPrimary
+            containerColor = NexoraSurface,
+            contentColor = NexoraTextPrimary,
+            disabledContainerColor = NexoraSurface.copy(alpha = 0.6f),
+            disabledContentColor = NexoraTextMuted
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -108,7 +111,7 @@ fun NexoraSecondaryButton(
     ) {
         Text(
             text = text,
-            color = if (enabled) NexoraTextPrimary else NexoraCyan.copy(alpha = 0.5f),
+            color = if (enabled) NexoraTextPrimary else NexoraTextMuted,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold
         )

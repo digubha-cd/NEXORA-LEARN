@@ -12,6 +12,7 @@ import java.util.UUID
  */
 data class Friend(
     val id: String = UUID.randomUUID().toString(),
+    val studentId: String = "",
     val name: String,
     val avatarInitials: String = name.take(2).uppercase(),
     val avatarColorHex: Long = 0xFF00E5FF,

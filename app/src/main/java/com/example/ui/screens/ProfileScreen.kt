@@ -21,7 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Language
@@ -31,18 +34,25 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Stars
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,6 +77,8 @@ import com.example.ui.theme.NexoraSurfaceVariant
 import com.example.ui.theme.NexoraTextMuted
 import com.example.ui.theme.NexoraTextPrimary
 import com.example.ui.theme.NexoraTextSecondary
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Profile screen displaying student enrollment info, Gujarati Medium status,
@@ -184,6 +196,134 @@ fun ProfileScreen(
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            // My Student ID Card with One-Tap Copy
+            item {
+                var isCopied by remember { mutableStateOf(false) }
+                val clipboardManager = LocalClipboardManager.current
+                val coroutineScope = rememberCoroutineScope()
+                val displayId = if (studentProfile.studentId.isNotBlank()) studentProfile.studentId else "NX-STUDENT"
+
+                NexoraCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("my_student_id_card"),
+                    contentPadding = 16.dp
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(NexoraPurple.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Badge,
+                                        contentDescription = null,
+                                        tint = NexoraPurple,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "My Student ID",
+                                        color = NexoraTextPrimary,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Permanent unique study identifier",
+                                        color = NexoraTextMuted,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+
+                            // Copy button
+                            Button(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(displayId))
+                                    isCopied = true
+                                    coroutineScope.launch {
+                                        delay(2000)
+                                        isCopied = false
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isCopied) NexoraCyan else NexoraSurfaceElevated
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.testTag("copy_student_id_button")
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isCopied) Icons.Outlined.Check else Icons.Outlined.ContentCopy,
+                                        contentDescription = "Copy ID",
+                                        tint = if (isCopied) NexoraBackground else NexoraCyan,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Text(
+                                        text = if (isCopied) "Copied!" else "Copy",
+                                        color = if (isCopied) NexoraBackground else NexoraTextPrimary,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+
+                        // Highlighted Student ID Display
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(NexoraSurfaceElevated, RoundedCornerShape(10.dp))
+                                .border(1.dp, NexoraBorder, RoundedCornerShape(10.dp))
+                                .padding(horizontal = 14.dp, vertical = 10.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = displayId,
+                                    color = NexoraCyan,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 2.sp,
+                                    modifier = Modifier.testTag("student_id_text")
+                                )
+                                Text(
+                                    text = "CLASS 12 COMMERCE",
+                                    color = NexoraTextMuted,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = "Share your unique Student ID with classmates so they can add you to their study friends list and leaderboard.",
+                            color = NexoraTextSecondary,
+                            fontSize = 11.sp,
+                            lineHeight = 15.sp
+                        )
                     }
                 }
             }

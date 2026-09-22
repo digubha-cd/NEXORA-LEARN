@@ -5,6 +5,7 @@ package com.example.core.model
  */
 data class StudentProfile(
     val userId: String = "",
+    val studentId: String = "",
     val studentName: String = "",
     val email: String? = null,
     val phoneNumber: String? = null,
@@ -24,6 +25,7 @@ data class StudentProfile(
     fun toFirestoreMap(): Map<String, Any?> {
         return mapOf(
             "userId" to userId,
+            "studentId" to studentId,
             "studentName" to studentName,
             "email" to email,
             "phoneNumber" to phoneNumber,
@@ -51,6 +53,7 @@ data class StudentProfile(
 
             return StudentProfile(
                 userId = map["userId"] as? String ?: "",
+                studentId = map["studentId"] as? String ?: "",
                 studentName = map["studentName"] as? String ?: "",
                 email = map["email"] as? String,
                 phoneNumber = map["phoneNumber"] as? String,

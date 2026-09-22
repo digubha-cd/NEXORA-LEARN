@@ -18,6 +18,7 @@ import com.example.ui.theme.NexoraTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.example.core.firebase.FirebaseInitHelper.ensureInitialized(applicationContext)
         enableEdgeToEdge()
         setContent {
             NexoraTheme {

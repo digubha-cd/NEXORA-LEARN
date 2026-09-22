@@ -1,4 +1,5 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import java.util.Base64
 
 plugins {
   alias(libs.plugins.android.application)
@@ -26,8 +27,23 @@ android {
   signingConfigs {
     create("release") {
       val keystorePath = System.getenv("KEYSTORE_PATH")
-      val customKeyFile = if (keystorePath != null) file(keystorePath) else file("${rootDir}/my-upload-key.jks")
-      if (customKeyFile.exists()) {
+      val keyCandidates = listOfNotNull(
+        if (keystorePath != null) file(keystorePath) else null,
+        file("${rootDir}/my-upload-key.jks"),
+        file("${projectDir}/my-upload-key.jks"),
+        file("${projectDir}/../my-upload-key.jks")
+      )
+      var customKeyFile = keyCandidates.firstOrNull { it.exists() }
+      if (customKeyFile == null) {
+        val b64File = file("${rootDir}/my-upload-key.jks.base64")
+        if (b64File.exists()) {
+          val decoded = Base64.getDecoder().decode(b64File.readText().trim())
+          val restored = file("${rootDir}/my-upload-key.jks")
+          restored.writeBytes(decoded)
+          customKeyFile = restored
+        }
+      }
+      if (customKeyFile != null && customKeyFile.exists()) {
         storeFile = customKeyFile
         storePassword = System.getenv("STORE_PASSWORD") ?: "nexoralearn2026"
         keyAlias = System.getenv("KEY_ALIAS") ?: "upload"

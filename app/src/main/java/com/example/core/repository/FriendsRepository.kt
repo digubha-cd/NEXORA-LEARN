@@ -1,11 +1,14 @@
 package com.example.core.repository
 
 import android.util.Log
+import com.example.NexoraApplication
+import com.example.core.firebase.FirebaseInitHelper
 import com.example.core.model.ChatMessage
 import com.example.core.model.Friend
 import com.example.core.model.FriendshipStatus
 import com.example.core.model.LeaderboardEntry
 import com.example.core.model.StudentProfile
+import com.example.core.util.StudentIdGenerator
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -63,10 +66,21 @@ object FriendsRepository {
     private val friendProfileRegistrations = mutableMapOf<String, ListenerRegistration>()
 
     private val isFirebaseAvailable: Boolean
-        get() = try {
-            FirebaseApp.getApps(FirebaseApp.getInstance().applicationContext).isNotEmpty()
-        } catch (e: Throwable) {
-            false
+        get() {
+            try {
+                FirebaseInitHelper.ensureInitialized(NexoraApplication.appContext)
+            } catch (e: Throwable) {
+                FirebaseInitHelper.ensureInitialized(null)
+            }
+            return try {
+                FirebaseApp.getApps(NexoraApplication.appContext).isNotEmpty()
+            } catch (e: Throwable) {
+                try {
+                    FirebaseApp.getInstance() != null
+                } catch (t: Throwable) {
+                    false
+                }
+            }
         }
 
     private val firestore: FirebaseFirestore?
@@ -74,6 +88,7 @@ object FriendsRepository {
             try {
                 FirebaseFirestore.getInstance()
             } catch (e: Throwable) {
+                Log.w(TAG, "FirebaseFirestore.getInstance() failed: ${e.message}")
                 null
             }
         } else null
@@ -103,10 +118,12 @@ object FriendsRepository {
                     val incomingList = snapshot?.documents?.mapNotNull { doc ->
                         val senderUid = doc.getString("senderUid") ?: return@mapNotNull null
                         val senderName = doc.getString("senderName") ?: "Class 12 Student"
+                        val senderStudentId = doc.getString("senderStudentId") ?: ""
                         val avatarColor = (doc.getLong("senderAvatarColorHex")) ?: 0xFF00E5FF
                         Friend(
                             id = senderUid,
                             name = senderName,
+                            studentId = senderStudentId,
                             avatarInitials = senderName.take(2).uppercase(),
                             avatarColorHex = avatarColor,
                             targetMarks = "90+ Marks",
@@ -138,10 +155,12 @@ object FriendsRepository {
                     val outgoingList = snapshot?.documents?.mapNotNull { doc ->
                         val receiverUid = doc.getString("receiverUid") ?: return@mapNotNull null
                         val receiverName = doc.getString("receiverName") ?: "Class 12 Student"
+                        val receiverStudentId = doc.getString("receiverStudentId") ?: ""
                         val avatarColor = (doc.getLong("receiverAvatarColorHex")) ?: 0xFF00E5FF
                         Friend(
                             id = receiverUid,
                             name = receiverName,
+                            studentId = receiverStudentId,
                             avatarInitials = receiverName.take(2).uppercase(),
                             avatarColorHex = avatarColor,
                             targetMarks = "90+ Marks",
@@ -211,6 +230,7 @@ object FriendsRepository {
                 if (error != null || snapshot == null || !snapshot.exists()) return@addSnapshotListener
                 val data = snapshot.data ?: return@addSnapshotListener
                 val name = (data["studentName"] as? String) ?: "Class 12 Student"
+                val studentId = (data["studentId"] as? String) ?: ""
                 val avatarColor = (data["avatarColorHex"] as? Number)?.toLong() ?: 0xFF00E5FF
                 val todos = (data["completedTodoCount"] as? Number)?.toInt() ?: 0
                 val streak = (data["studyStreakDays"] as? Number)?.toInt() ?: 0
@@ -223,6 +243,7 @@ object FriendsRepository {
                 val friendObj = Friend(
                     id = friendUid,
                     name = name,
+                    studentId = studentId,
                     avatarInitials = name.take(2).uppercase(),
                     avatarColorHex = avatarColor,
                     targetMarks = target,
@@ -418,17 +439,20 @@ object FriendsRepository {
     }
 
     /**
-     * Send friend invite by student name or code
+     * Send friend invite strictly by Student ID (e.g., NX-7K4P92)
      */
     fun sendFriendInvite(nameOrCode: String): Boolean {
         val cleanInput = nameOrCode.trim()
         if (cleanInput.isBlank()) return false
 
+        val normalizedId = StudentIdGenerator.normalizeStudentId(cleanInput)
+        val displayName = if (normalizedId != null) normalizedId else cleanInput
         val tempId = "invite_${UUID.randomUUID()}"
         val newFriend = Friend(
             id = tempId,
-            name = cleanInput,
-            avatarInitials = cleanInput.take(2).uppercase(),
+            name = displayName,
+            studentId = normalizedId ?: "",
+            avatarInitials = if (displayName.length >= 2) displayName.take(2).uppercase() else "NX",
             avatarColorHex = 0xFF00E5FF,
             targetMarks = "90+ Marks",
             completedTodoCount = 0,
@@ -443,33 +467,59 @@ object FriendsRepository {
 
         val currentUid = currentProfile?.userId
         val currentName = currentProfile?.studentName ?: "Class 12 Student"
+        val currentStudentId = currentProfile?.studentId ?: ""
         val currentAvatarColor = currentProfile?.avatarColorHex ?: 0xFF00E5FF
         val db = firestore
 
         if (db != null && !currentUid.isNullOrBlank()) {
             repositoryScope.launch {
                 try {
-                    // Search for registered student
+                    // Search for registered student via student_ids collection or students collection
+                    val searchId = normalizedId ?: cleanInput
                     var targetUid: String? = null
-                    var targetName = cleanInput
+                    var targetName = displayName
+                    var targetStudentId = normalizedId ?: ""
                     var targetAvatarColor = 0xFF00E5FF
 
-                    val directDoc = db.collection("students").document(cleanInput).get().awaitTask()
-                    if (directDoc.exists()) {
-                        targetUid = directDoc.id
-                        targetName = directDoc.getString("studentName") ?: cleanInput
-                        targetAvatarColor = directDoc.getLong("avatarColorHex") ?: 0xFF00E5FF
-                    } else {
-                        val nameMatch = db.collection("students")
-                            .whereEqualTo("studentName", cleanInput)
+                    // 1. Check student_ids index collection
+                    val idDoc = db.collection("student_ids").document(searchId).get().awaitTask()
+                    if (idDoc.exists()) {
+                        val mappedUid = idDoc.getString("userId")
+                        if (!mappedUid.isNullOrBlank()) {
+                            targetUid = mappedUid
+                            val profileDoc = db.collection("students").document(mappedUid).get().awaitTask()
+                            if (profileDoc.exists()) {
+                                targetName = profileDoc.getString("studentName") ?: displayName
+                                targetStudentId = profileDoc.getString("studentId") ?: searchId
+                                targetAvatarColor = profileDoc.getLong("avatarColorHex") ?: 0xFF00E5FF
+                            }
+                        }
+                    }
+
+                    // 2. Query students collection by studentId
+                    if (targetUid == null) {
+                        val idMatch = db.collection("students")
+                            .whereEqualTo("studentId", searchId)
                             .limit(1)
                             .get()
                             .awaitTask()
-                        if (!nameMatch.isEmpty) {
-                            val doc = nameMatch.documents.first()
+                        if (!idMatch.isEmpty) {
+                            val doc = idMatch.documents.first()
                             targetUid = doc.id
-                            targetName = doc.getString("studentName") ?: cleanInput
+                            targetName = doc.getString("studentName") ?: displayName
+                            targetStudentId = doc.getString("studentId") ?: searchId
                             targetAvatarColor = doc.getLong("avatarColorHex") ?: 0xFF00E5FF
+                        }
+                    }
+
+                    // 3. Fallback direct lookup
+                    if (targetUid == null) {
+                        val directDoc = db.collection("students").document(cleanInput).get().awaitTask()
+                        if (directDoc.exists()) {
+                            targetUid = directDoc.id
+                            targetName = directDoc.getString("studentName") ?: cleanInput
+                            targetStudentId = directDoc.getString("studentId") ?: ""
+                            targetAvatarColor = directDoc.getLong("avatarColorHex") ?: 0xFF00E5FF
                         }
                     }
 
@@ -479,15 +529,17 @@ object FriendsRepository {
                             "requestId" to requestId,
                             "senderUid" to currentUid,
                             "senderName" to currentName,
+                            "senderStudentId" to currentStudentId,
                             "senderAvatarColorHex" to currentAvatarColor,
                             "receiverUid" to targetUid,
                             "receiverName" to targetName,
+                            "receiverStudentId" to targetStudentId,
                             "receiverAvatarColorHex" to targetAvatarColor,
                             "status" to "PENDING",
                             "createdAt" to System.currentTimeMillis()
                         )
                         db.collection("friend_requests").document(requestId).set(requestDoc, SetOptions.merge())
-                        Log.d(TAG, "Friend request created in Firestore: $requestId")
+                        Log.d(TAG, "Friend request created in Firestore: $requestId for Student ID: $targetStudentId")
                     }
                 } catch (e: Exception) {
                     Log.w(TAG, "Notice sending friend invite to Firestore: ${e.message}")

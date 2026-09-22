@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Stars
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material.icons.outlined.Whatshot
@@ -829,6 +830,96 @@ fun HomeScreen(
                             )
                         }
                     }
+                }
+            }
+
+            // Bottom Creator & Education Footer
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, bottom = 24.dp)
+                        .testTag("home_footer_credits"),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Elegant subtle divider with education icon
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(1.dp)
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            NexoraBorder.copy(alpha = 0.2f),
+                                            NexoraBorder
+                                        )
+                                    )
+                                )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp)
+                                .size(24.dp)
+                                .background(NexoraCyan.copy(alpha = 0.1f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.School,
+                                contentDescription = null,
+                                tint = NexoraCyan,
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(1.dp)
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            NexoraBorder,
+                                            NexoraBorder.copy(alpha = 0.2f)
+                                        )
+                                    )
+                                )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = "This App is Made by",
+                        color = NexoraTextMuted,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.4.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = "DIGVIJAYSINH CHAUHAN",
+                        color = NexoraTextSecondary,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "Gujarat Board Class 12 Commerce • Target 90+ Marks",
+                        color = NexoraTextMuted,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Normal,
+                        letterSpacing = 0.3.sp
+                    )
                 }
             }
 

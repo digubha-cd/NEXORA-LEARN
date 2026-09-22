@@ -195,7 +195,7 @@ fun LoginScreen(
                 if (!isOtpSent) {
                     TabRow(
                         selectedTabIndex = selectedTab,
-                        containerColor = NexoraSurfaceElevated,
+                        containerColor = NexoraSurfaceVariant,
                         contentColor = NexoraCyan,
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(

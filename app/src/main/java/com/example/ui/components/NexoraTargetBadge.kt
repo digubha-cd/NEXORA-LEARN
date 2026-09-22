@@ -53,9 +53,9 @@ fun NexoraTargetBadge(
 
     val backgroundBrush = Brush.horizontalGradient(
         colors = listOf(
-            NexoraGold.copy(alpha = 0.16f),
+            NexoraGold.copy(alpha = 0.08f),
             NexoraSurfaceElevated,
-            NexoraCyan.copy(alpha = 0.16f)
+            NexoraCyan.copy(alpha = 0.08f)
         )
     )
 
@@ -68,7 +68,7 @@ fun NexoraTargetBadge(
     Box(
         modifier = modifier
             .background(backgroundBrush, shape = RoundedCornerShape(16.dp))
-            .border(1.5.dp, gradientBrush, shape = RoundedCornerShape(16.dp))
+            .border(1.2.dp, gradientBrush, shape = RoundedCornerShape(16.dp))
             .padding(horizontal = if (compact) 12.dp else 16.dp, vertical = if (compact) 8.dp else 12.dp)
             .testTag("target_90_plus_badge"),
         contentAlignment = Alignment.CenterStart
@@ -80,8 +80,8 @@ fun NexoraTargetBadge(
             Box(
                 modifier = Modifier
                     .size(if (compact) 32.dp else 40.dp)
-                    .background(NexoraGold.copy(alpha = 0.22f), shape = RoundedCornerShape(10.dp))
-                    .border(1.dp, NexoraGold.copy(alpha = 0.6f), shape = RoundedCornerShape(10.dp)),
+                    .background(NexoraGold.copy(alpha = 0.12f), shape = RoundedCornerShape(10.dp))
+                    .border(1.dp, NexoraGold.copy(alpha = 0.35f), shape = RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -121,7 +121,8 @@ fun NexoraTargetBadge(
 
             Box(
                 modifier = Modifier
-                    .background(NexoraGold.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                    .background(NexoraGold.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
+                    .border(1.dp, NexoraGold.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
